@@ -157,22 +157,30 @@ function startPayment(testName, testId) {
     currency: "INR",
     name: "TGECET Test Series",
     description: testName,
-    handler: function(response) {
-      // 1. Show immediate feedback
-      alert("Payment successful! Loading your test...");
-      
-      // 2. Unlock test in UI
-      document.getElementById(`test-${testId}`).style.display = 'block';
-      
-      // 3. Save to Firestore (optional but recommended)
-      if (firebase.auth().currentUser) {
-        firebase.firestore().collection("users")
-          .doc(firebase.auth().currentUser.uid)
-          .update({
-            purchasedTests: firebase.firestore.FieldValue.arrayUnion(testId)
-          });
-      }
-    },
+  // Replace your current Razorpay handler with this:
+handler: function(response) {
+  console.log("Payment ID:", response.razorpay_payment_id);
+  
+  // Immediately show test (UI)
+  const testElement = document.getElementById(`test-${testId}`);
+  if (testElement) {
+    testElement.style.display = 'block';
+    testElement.scrollIntoView();
+  } else {
+    console.error("Test container not found:", `test-${testId}`);
+  }
+
+  // Save to Firestore (with error handling)
+  if (firebase.auth().currentUser) {
+    firebase.firestore().collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .update({
+        purchasedTests: firebase.firestore.FieldValue.arrayUnion(testId)
+      })
+      .then(() => console.log("Firestore updated"))
+      .catch(e => console.error("Firestore error:", e));
+  }
+}
     theme: { color: "#3399cc" }
   };
   const rzp = new Razorpay(options);
