@@ -38,6 +38,16 @@
 					<div id="main">
 						<div class="inner">
 
+							<!-- Place this where you want the login form - usually near the top/main content -->
+<div id="auth-container">
+  <h3>Student Login</h3>
+  <input type="email" id="email" placeholder="Your Email" required>
+  <input type="password" id="password" placeholder="Password" required>
+  <button onclick="login()">Login</button>
+  <button onclick="signup()">Create Account</button>
+  <p id="auth-message" style="color: red;"></p> <!-- For error messages -->
+</div>
+
 							<!-- Header -->
 								<header id="header">
 									<a href="index.html" class="logo"><strong>TGECET</strong> Test Series</a>
@@ -50,15 +60,7 @@
 
 							<!-- Banner -->
 								<section id="banner">
-<!-- Place this where you want the login form - usually near the top/main content -->
-<div id="auth-container">
-  <h3>Student Login</h3>
-  <input type="email" id="email" placeholder="Your Email" required>
-  <input type="password" id="password" placeholder="Password" required>
-  <button onclick="login()">Login</button>
-  <button onclick="signup()">Create Account</button>
-  <p id="auth-message" style="color: red;"></p> <!-- For error messages -->
-</div>
+
 									
 									<div class="content">
 										<header>
