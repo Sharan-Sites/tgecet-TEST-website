@@ -50,10 +50,20 @@
 
 							<!-- Banner -->
 								<section id="banner">
+<!-- Place this where you want the login form - usually near the top/main content -->
+<div id="auth-container">
+  <h3>Student Login</h3>
+  <input type="email" id="email" placeholder="Your Email" required>
+  <input type="password" id="password" placeholder="Password" required>
+  <button onclick="login()">Login</button>
+  <button onclick="signup()">Create Account</button>
+  <p id="auth-message" style="color: red;"></p> <!-- For error messages -->
+</div>
+									
 									<div class="content">
 										<header>
 											<h1>TGECET Engineering<br />
-											Test Series 2024</h1>
+											Test Series 2025</h1>
 											<p>Previous Year MCQs with Detailed Solutions</p>
 										</header>
 										<p>Practice with authentic previous year questions. Each test includes:</p>
@@ -124,7 +134,7 @@
   </button>
 
   <!-- Step 2: Google Form (Hidden Until Payment) -->
-  <div id="google-form" style="display: none;">
+  <div id="test-PHYS2023" style="display: none;">
     <iframe 
       src="https://docs.google.com/forms/d/e/1FAIpQLSdMWXSwZ5iem4GlYZ7rASzSS2yW3WXqoXETHWfxPyfb7D9T4g/viewform?embedded=true" 
       width="100%" 
@@ -273,18 +283,83 @@ function startPayment(testName, testId) {
 					document.getElementById(testId).style.display = "block";
 				}
 			</script>
-// Unlocks test after payment
-function unlockTest(testId) {
-  const user = firebase.auth().currentUser;
-  if (!user) return;
+		<!-- Firebase Auth + Test Access System -->
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
 
-  const db = firebase.firestore();
-  db.collection("users").doc(user.uid).update({
-    purchasedTests: firebase.firestore.FieldValue.arrayUnion(testId)
-  }).then(() => {
-    // Show the test
-    document.getElementById(`test-${testId}`).style.display = 'block';
+<script>
+  // Initialize Firebase (REPLACE with your config)
+  const firebaseConfig = {
+    apiKey: "AIzaSyAPUsslM2HS_flvvcn7PUExmdMXdTmO8fo",
+    authDomain: "tgecet-tests.firebaseapp.com",
+    projectId: "tgecet-tests",
+    storageBucket: "tgecet-tests.firebasestorage.app",
+    messagingSenderId: "475208547296",
+    appId: "1:475208547296:web:856557b16677f417230985"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  // ===== AUTH FUNCTIONS =====
+  // 1. Login
+  function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then(() => {
+        alert("Logged in successfully!");
+        loadPurchasedTests(); // Load purchased tests
+      })
+      .catch(error => alert("Error: " + error.message));
+  }
+
+  // 2. Signup
+  function signup() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        // Create user document in Firestore
+        firebase.firestore().collection("users").doc(userCredential.user.uid).set({
+          email: email,
+          purchasedTests: [],
+          createdAt: new Date()
+        });
+        alert("Account created!");
+      })
+      .catch(error => alert("Error: " + error.message));
+  }
+
+  // 3. Load Purchased Tests
+  function loadPurchasedTests() {
+    const user = firebase.auth().currentUser;
+    if (!user) return;
+
+    firebase.firestore().collection("users").doc(user.uid).get()
+      .then(doc => {
+        const tests = doc.data()?.purchasedTests || [];
+        tests.forEach(testId => {
+          // Unlock each purchased test
+          const testElement = document.getElementById(`test-${testId}`);
+          if (testElement) testElement.style.display = 'block';
+        });
+      });
+  }
+
+  // 4. Auto-check login state
+  firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+      console.log("User logged in:", user.email);
+      loadPurchasedTests();
+    } else {
+      console.log("User logged out");
+    }
   });
-}
+</script>
+
+		
+
 	</body>
 </html>
