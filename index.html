@@ -152,15 +152,26 @@
 <script>
 function startPayment(testName, testId) {
   const options = {
-    key: "rzp_test_saWN7cjbr7pL05", // Key ID only
-    amount: 2900, // ₹29 in paise
+    key: "rzp_test_saWN7cjbr7pL05",
+    amount: 2900,
     currency: "INR",
     name: "TGECET Test Series",
     description: testName,
     handler: function(response) {
-      alert("Payment successful! Loading test...");
-      // Call function to unlock test for user
-      unlockTest(testId); 
+      // 1. Show immediate feedback
+      alert("Payment successful! Loading your test...");
+      
+      // 2. Unlock test in UI
+      document.getElementById(`test-${testId}`).style.display = 'block';
+      
+      // 3. Save to Firestore (optional but recommended)
+      if (firebase.auth().currentUser) {
+        firebase.firestore().collection("users")
+          .doc(firebase.auth().currentUser.uid)
+          .update({
+            purchasedTests: firebase.firestore.FieldValue.arrayUnion(testId)
+          });
+      }
     },
     theme: { color: "#3399cc" }
   };
