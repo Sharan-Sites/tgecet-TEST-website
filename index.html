@@ -4,12 +4,30 @@
 	Modified from Editorial by HTML5 UP
 -->
 <html>
+
+
+
+	
 	<head>
 		<title>TGECET Test Series | Practice Previous Year MCQs</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<meta name="description" content="Practice TGECET previous year MCQs with detailed solutions. ₹29 per test series.">
 		<link rel="stylesheet" href="assets/css/main.css" />
+
+
+			<!-- Firebase Configuration -->
+<script type="module">
+  const firebaseConfig = {
+    apiKey: "AIzaSyAPUsslM2HS_flvvcn7PUExmdMXdTmO8fo",
+    authDomain: "tgecet-tests.firebaseapp.com",
+    projectId: "tgecet-tests",
+    storageBucket: "tgecet-tests.firebasestorage.app",
+    messagingSenderId: "475208547296",
+    appId: "1:475208547296:web:856557b16677f417230985"
+  };
+  firebase.initializeApp(firebaseConfig);
+</script>
 	</head>
 	<body class="is-preload">
 
@@ -120,29 +138,25 @@
 <!-- Razorpay Integration -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-  function payNow() {
-    var options = {
-      key: "rzp_test_saWN7cjbr7pL05",  // Your Test Key ID
-      amount: 2900,  // ₹29 x 100 (paise)
-      currency: "INR",
-      name: "TGECET Test Series",
-      description: "Physics Test 2023",
-      handler: function(response) {
-        // On Successful Payment:
-        alert("Payment successful! Starting your test...");
-        document.getElementById("buy-button").style.display = "none";
-        document.getElementById("google-form").style.display = "block";
-      },
-      prefill: {
-        email: "student@example.com",  // Auto-fill payer email
-      },
-      theme: {
-        color: "#3399cc"  // TGECET-themed blue
-      }
-    };
-    var rzp = new Razorpay(options);
-    rzp.open();
-  }
+function startPayment(testName, testId) {
+  const options = {
+    key: "rzp_test_saWN7cjbr7pL05", // Key ID only
+    amount: 2900, // ₹29 in paise
+    currency: "INR",
+    name: "TGECET Test Series",
+    description: testName,
+    handler: function(response) {
+      alert("Payment successful! Loading test...");
+      // Call function to unlock test for user
+      unlockTest(testId); 
+    },
+    theme: { color: "#3399cc" }
+  };
+  const rzp = new Razorpay(options);
+  rzp.open();
+}
+
+	
 </script>									
 											<ul class="actions">
 												<li><a href="#" class="button primary">Buy This Test (₹29)</a></li>
@@ -259,6 +273,18 @@
 					document.getElementById(testId).style.display = "block";
 				}
 			</script>
+// Unlocks test after payment
+function unlockTest(testId) {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
 
+  const db = firebase.firestore();
+  db.collection("users").doc(user.uid).update({
+    purchasedTests: firebase.firestore.FieldValue.arrayUnion(testId)
+  }).then(() => {
+    // Show the test
+    document.getElementById(`test-${testId}`).style.display = 'block';
+  });
+}
 	</body>
 </html>
