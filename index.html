@@ -97,26 +97,42 @@
 									<header class="major">
 										<h2>Available Test Series</h2>
 									</header>
-									<div class="posts">
-										<article>
-											<h3>Mathematics - 2023 Paper</h3>
-											<p>25 questions | 60 minutes | Detailed solutions</p>
-											<!-- Google Form Embed -->
-											<div style="width: 100%; overflow: hidden;">
-  <iframe 
-    src="https://docs.google.com/forms/d/e/1FAIpQLSdMWXSwZ5iem4GlYZ7rASzSS2yW3WXqoXETHWfxPyfb7D9T4g/viewform?embedded=true" 
-    width="100%" 
-    height="800px"
-    style="border: none; min-height: 600px;"
-    onload="document.getElementById('form-loading').style.display='none'"
-    frameborder="0" 
-    marginheight="0" 
-    marginwidth="0">
-  </iframe>
-  <div id="form-loading" style="text-align: center; padding: 20px;">
-    Loading test, please wait...
+
+									<div id="test-container">
+  <!-- Payment Button (Visible First) -->
+  <button onclick="unlockTest()" class="button primary">
+    Buy This Test (₹29)
+  </button>
+
+  <!-- Hidden Form (Shows After Payment) -->
+  <div id="google-form" style="display: none;">
+    <iframe 
+      src="https://docs.google.com/forms/d/e/1FAIpQLSdMWXSwZ5iem4GlYZ7rASzSS2yW3WXqoXETHWfxPyfb7D9T4g/viewform?embedded=true" 
+      width="100%" 
+      height="800px"
+      style="border: none;">
+    </iframe>
   </div>
 </div>
+
+<script>
+  function unlockTest() {
+    // Razorpay Payment Integration
+    var options = {
+      key: "YOUR_RAZORPAY_KEY",  // Test key: https://razorpay.com/docs/
+      amount: 2900, // ₹29 x 100 paise
+      name: "TGECET Test Series",
+      description: "Physics Test 2023",
+      handler: function(response) {
+        // Show form after successful payment
+        document.getElementById("google-form").style.display = "block";
+      }
+    };
+    var rzp = new Razorpay(options);
+    rzp.open();
+  }
+</script>
+									
 											<ul class="actions">
 												<li><a href="#" class="button primary">Buy This Test (₹29)</a></li>
 											</ul>
