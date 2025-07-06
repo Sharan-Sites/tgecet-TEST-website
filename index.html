@@ -98,41 +98,52 @@
 										<h2>Available Test Series</h2>
 									</header>
 
-									<div id="test-container">
-  <!-- Payment Button (Visible First) -->
-  <button onclick="unlockTest()" class="button primary">
+									<!-- Payment Button & Form Container -->
+<div id="test-container">
+  <!-- Step 1: Buy Button (Visible) -->
+  <button id="buy-button" class="button primary" onclick="payNow()">
     Buy This Test (₹29)
   </button>
 
-  <!-- Hidden Form (Shows After Payment) -->
+  <!-- Step 2: Google Form (Hidden Until Payment) -->
   <div id="google-form" style="display: none;">
     <iframe 
       src="https://docs.google.com/forms/d/e/1FAIpQLSdMWXSwZ5iem4GlYZ7rASzSS2yW3WXqoXETHWfxPyfb7D9T4g/viewform?embedded=true" 
       width="100%" 
       height="800px"
+      frameborder="0"
       style="border: none;">
     </iframe>
   </div>
 </div>
 
+<!-- Razorpay Integration -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-  function unlockTest() {
-    // Razorpay Payment Integration
+  function payNow() {
     var options = {
-      key: "YOUR_RAZORPAY_KEY",  // Test key: https://razorpay.com/docs/
-      amount: 2900, // ₹29 x 100 paise
+      key: "rzp_test_saWN7cjbr7pL05",  // Your Test Key ID
+      amount: 2900,  // ₹29 x 100 (paise)
+      currency: "INR",
       name: "TGECET Test Series",
       description: "Physics Test 2023",
       handler: function(response) {
-        // Show form after successful payment
+        // On Successful Payment:
+        alert("Payment successful! Starting your test...");
+        document.getElementById("buy-button").style.display = "none";
         document.getElementById("google-form").style.display = "block";
+      },
+      prefill: {
+        email: "student@example.com",  // Auto-fill payer email
+      },
+      theme: {
+        color: "#3399cc"  // TGECET-themed blue
       }
     };
     var rzp = new Razorpay(options);
     rzp.open();
   }
-</script>
-									
+</script>									
 											<ul class="actions">
 												<li><a href="#" class="button primary">Buy This Test (₹29)</a></li>
 											</ul>
